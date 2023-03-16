@@ -17,21 +17,18 @@ void setup() {
   pinMode(idr,INPUT);
   pinMode(pir, INPUT);
   servo.attach(9);
-
   pinMode(led,OUTPUT);
-}
-void led_Emerg(){
-  /*ไฟติด 3 ดวง เรียงกัน 1 ติด แล้ว 2 ติด ตามด้วย3  1ดับ 2ดับ แล้วตามด้วย3*/
-  
-for(int i=0;i<=2;i++){ 
-digitalWrite(led[i],1);
-  delay(100);  
-}
-for(int i=0;i<3;i++){
-  digitalWrite(led[i],0);
-  delay(100);
 
 }
+void led_Emerg(){ 
+  for(int i=0;i<=2;i++){ 
+    digitalWrite(led[i],1);
+    delay(100);  
+  }
+  for(int i=0;i<3;i++){
+   digitalWrite(led[i],0);
+   delay(100);
+  }
 }
 
 void Door_Open(bool door_status){
@@ -93,15 +90,11 @@ void water() {
 void light() {
   int val = analogRead(idr);
   Serial.print("Light : ");
-  Serial.println(val);  
+  Serial.print(val);  
   
-  if(val < 100){
-    servo.write(0); 
-    delay(1000); 
+  if(val < 100){  
   }
   else{
-    servo.write(300); 
-    delay(1000); 
   }
 }
 
@@ -112,24 +105,27 @@ void motion_pir(){
 
   if (pirState == HIGH) {
     Serial.println("PIR ON");
-    servo.write(0); 
-    delay(1000);    
+    digitalWrite(led[0],1);
   }
 
   else if (pirState == LOW) {
-    servo.write(300); 
-    delay(1000);
-
+    digitalWrite(led[0],0);
   }
   
 }
 
 void loop(){
   
-  Door_Open();
-  /*Serial.println(*ptrStatus);
-  delay(1000);
-  Door_Open(false);
-  Serial.println(*ptrStatus);*/
-  
+  if (Serial.available() > 0) { 
+    char button = Serial.read(); 
+    if (button == 'b') { 
+        while(Serial.read() != 'n'){
+          light();
+          motion_pir();
+          delay(100);
+          //led_Emerg();
+        }
+    }
+  }
 }
+  
